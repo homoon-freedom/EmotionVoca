@@ -258,9 +258,32 @@
       transition: background-color 0.18s ease, border-color 0.18s ease;
     }
 
+    .header-bar {
+      display: flex;
+      align-items: stretch;
+      gap: 6px;
+      width: 100%;
+    }
+
+    .header-util-fixed {
+      display: flex;
+      align-items: stretch;
+      gap: 6px;
+      flex: 0 0 auto;
+      padding-right: 6px;
+      padding-bottom: 2px;
+      border-right: 1px solid rgba(255, 255, 255, 0.18);
+      position: relative;
+      z-index: 2;
+    }
+
     .day-tabs-wrap {
+      flex: 1 1 auto;
+      min-width: 0;
+      position: relative;
       display: flex; align-items: stretch; gap: 6px;
       overflow-x: auto; padding-bottom: 2px; scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
     }
     .day-tabs-wrap::-webkit-scrollbar { display: none; }
 
@@ -306,6 +329,7 @@
     .workspace {
       display: flex; flex-direction: row; flex: 1; min-height: 0;
       position: relative; overflow: hidden;
+      touch-action: pan-y;
     }
 
     .sidebar-backdrop {
@@ -1218,6 +1242,8 @@
       }
 
       .top-header { padding: 9px 10px; }
+      .header-bar { gap: 5px; }
+      .header-util-fixed { gap: 5px; padding-right: 5px; }
       .day-tab { flex: 0 0 auto; min-width: 58px; padding: 7px 9px; }
       .tab-util-btn { min-width: 46px; padding: 6px 8px; }
 
@@ -1268,30 +1294,33 @@
       <button type="button" class="cat-tab" data-cat="judge" aria-selected="false">판단</button>
     </nav>
 
-    <!-- 상단 헤더: 목록 · 설정 · 일~토요일 탭 (활성 탭과 동일 배경색) -->
+    <!-- 상단 헤더: 좌측 고정(목록 · 설정) + 우측 스크롤 가능(일~토요일 탭) -->
     <header class="top-header">
-      <nav class="day-tabs-wrap" id="dayTabs" aria-label="요일 선택">
-        <button type="button" class="tab-util-btn" id="sidebarToggleBtn" aria-label="목록 열기/닫기">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
-            <line x1="4" y1="6" x2="20" y2="6"></line>
-            <line x1="4" y1="12" x2="20" y2="12"></line>
-            <line x1="4" y1="18" x2="20" y2="18"></line>
-          </svg>
-          <span class="tab-util-label">목록</span>
-        </button>
-        <button type="button" class="tab-util-btn" id="settingsBtn" aria-label="설정 열기">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="3"></circle>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.6.85 1 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-          </svg>
-          <span class="tab-util-label">설정</span>
-        </button>
-      </nav>
+      <div class="header-bar">
+        <div class="header-util-fixed" aria-label="도구 메뉴">
+          <button type="button" class="tab-util-btn" id="sidebarToggleBtn" aria-label="목록 열기/닫기">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+              <line x1="4" y1="6" x2="20" y2="6"></line>
+              <line x1="4" y1="12" x2="20" y2="12"></line>
+              <line x1="4" y1="18" x2="20" y2="18"></line>
+            </svg>
+            <span class="tab-util-label">목록</span>
+          </button>
+          <button type="button" class="tab-util-btn" id="settingsBtn" aria-label="설정 열기">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.6.85 1 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+            <span class="tab-util-label">설정</span>
+          </button>
+        </div>
+        <nav class="day-tabs-wrap" id="dayTabs" aria-label="요일 선택"></nav>
+      </div>
       <input type="file" id="jsonFileInput" accept=".json,application/json" multiple style="display:none;" />
     </header>
 
     <!-- 통합 워크스페이스: 태블릿·PC는 좌측 고정 사이드바 / 모바일은 좌측 드로어 사이드바 -->
-    <div class="workspace">
+    <div class="workspace" id="workspace">
       <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
       <aside class="sidebar" id="sidebar">
@@ -1467,6 +1496,9 @@
     // DOM 참조
     const categoryTabsEl = document.getElementById('categoryTabs');
     const dayTabsEl = document.getElementById('dayTabs');
+    const sidebarToggleBtnEl = document.getElementById('sidebarToggleBtn');
+    const settingsBtnEl = document.getElementById('settingsBtn');
+    const workspaceEl = document.getElementById('workspace');
     const sidebarEl = document.getElementById('sidebar');
     const sidebarBackdropEl = document.getElementById('sidebarBackdrop');
     const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
@@ -2084,66 +2116,62 @@
     }
 
     function syncSidebarToggleButtonState() {
-      const btn = document.getElementById('sidebarToggleBtn');
-      if (!btn) return;
+      if (!sidebarToggleBtnEl) return;
       if (isMobileViewport()) {
-        btn.classList.toggle('is-active', sidebarEl.classList.contains('open'));
+        sidebarToggleBtnEl.classList.toggle('is-active', sidebarEl.classList.contains('open'));
       } else {
-        btn.classList.toggle('is-active', !sidebarEl.classList.contains('collapsed'));
+        sidebarToggleBtnEl.classList.toggle('is-active', !sidebarEl.classList.contains('collapsed'));
       }
     }
 
-    function createSidebarToggleBtn() {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'tab-util-btn';
-      btn.id = 'sidebarToggleBtn';
-      btn.setAttribute('aria-label', '목록 열기/닫기');
-      btn.innerHTML = `
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
-          <line x1="4" y1="6" x2="20" y2="6"></line>
-          <line x1="4" y1="12" x2="20" y2="12"></line>
-          <line x1="4" y1="18" x2="20" y2="18"></line>
-        </svg>
-        <span class="tab-util-label">목록</span>
-      `;
-      btn.addEventListener('click', toggleSidebar);
-      return btn;
+    function isSidebarOpen() {
+      return isMobileViewport()
+        ? sidebarEl.classList.contains('open')
+        : !sidebarEl.classList.contains('collapsed');
     }
 
-    function createSettingsBtn() {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'tab-util-btn';
-      btn.id = 'settingsBtn';
-      btn.setAttribute('aria-label', '설정 열기');
-      btn.innerHTML = `
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="3"></circle>
-          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.6.85 1 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-        </svg>
-        <span class="tab-util-label">설정</span>
-      `;
-      btn.addEventListener('click', openSettingsModal);
-      return btn;
+    function openSidebar() {
+      if (isMobileViewport()) {
+        if (sidebarEl.classList.contains('open')) return;
+        sidebarEl.classList.add('open');
+        sidebarBackdropEl.classList.add('open');
+        scrollActiveWordIntoView();
+      } else {
+        if (!sidebarEl.classList.contains('collapsed')) return;
+        sidebarEl.classList.remove('collapsed');
+        scrollActiveWordIntoView();
+      }
+      syncSidebarToggleButtonState();
+    }
+
+    function closeSidebar() {
+      if (isMobileViewport()) {
+        closeMobileSidebar();
+      } else {
+        if (sidebarEl.classList.contains('collapsed')) return;
+        sidebarEl.classList.add('collapsed');
+        syncSidebarToggleButtonState();
+      }
     }
 
     function toggleSidebar() {
-      if (isMobileViewport()) {
-        const willOpen = !sidebarEl.classList.contains('open');
-        sidebarEl.classList.toggle('open', willOpen);
-        sidebarBackdropEl.classList.toggle('open', willOpen);
-        if (willOpen) scrollActiveWordIntoView();
+      if (isSidebarOpen()) {
+        closeSidebar();
       } else {
-        sidebarEl.classList.toggle('collapsed');
+        openSidebar();
       }
-      syncSidebarToggleButtonState();
     }
 
     function closeMobileSidebar() {
       sidebarEl.classList.remove('open');
       sidebarBackdropEl.classList.remove('open');
       syncSidebarToggleButtonState();
+    }
+
+    function isAnyModalOpen() {
+      return settingsModalEl.classList.contains('open')
+        || qaListModalEl.classList.contains('open')
+        || favListModalEl.classList.contains('open');
     }
 
     function renderCategoryTabs() {
@@ -2190,9 +2218,8 @@
     function renderDayTabs() {
       const cfg = catCfg();
       const st = catState();
+      const prevScrollLeft = dayTabsEl.scrollLeft;
       dayTabsEl.innerHTML = '';
-      dayTabsEl.appendChild(createSidebarToggleBtn());
-      dayTabsEl.appendChild(createSettingsBtn());
 
       cfg.daysMeta.forEach(day => {
         const btn = document.createElement('button');
@@ -2206,12 +2233,14 @@
           searchInputEl.value = '';
           searchClearEl.style.display = 'none';
           renderAll();
+          scrollActiveDayTabIntoView();
           scrollActiveWordIntoView();
           mainContentEl.scrollTop = 0;
         });
         dayTabsEl.appendChild(btn);
       });
 
+      dayTabsEl.scrollLeft = prevScrollLeft;
       syncSidebarToggleButtonState();
     }
 
@@ -2596,7 +2625,12 @@
 
     function scrollActiveDayTabIntoView() {
       const activeTab = dayTabsEl.querySelector('.day-tab.active');
-      if (activeTab) activeTab.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+      if (!activeTab) return;
+      const targetLeft = activeTab.offsetLeft - (dayTabsEl.clientWidth - activeTab.offsetWidth) / 2;
+      dayTabsEl.scrollTo({
+        left: Math.max(0, targetLeft),
+        behavior: 'smooth'
+      });
     }
 
     function openSettingsModal() {
@@ -2939,9 +2973,97 @@
       }
     });
 
-    // 사이드바 & 모달 이벤트
+    // 좌측 고정 유틸 버튼(목록 · 설정) & 사이드바 · 모달 이벤트
+    if (sidebarToggleBtnEl) sidebarToggleBtnEl.addEventListener('click', toggleSidebar);
+    if (settingsBtnEl) settingsBtnEl.addEventListener('click', openSettingsModal);
     sidebarBackdropEl.addEventListener('click', closeMobileSidebar);
     sidebarCloseBtn.addEventListener('click', closeMobileSidebar);
+
+    // 화면 좌→우 스와이프로 리스트 사이드바 열기 (열린 상태에서 우→좌 스와이프로 닫기)
+    (function setupSidebarSwipeGesture() {
+      if (!workspaceEl) return;
+      let tracking = false;
+      let startX = 0;
+      let startY = 0;
+      let lastX = 0;
+      let lastY = 0;
+      let startTime = 0;
+      let lockedAxis = null; // 'x' | 'y' | null
+      let startedInSidebar = false;
+
+      const reset = () => {
+        tracking = false;
+        lockedAxis = null;
+        startedInSidebar = false;
+      };
+
+      workspaceEl.addEventListener('touchstart', (e) => {
+        if (!e.touches || e.touches.length !== 1 || isAnyModalOpen()) {
+          reset();
+          return;
+        }
+        const target = e.target;
+        if (target && target.closest && target.closest('input, textarea, select, [contenteditable="true"]')) {
+          reset();
+          return;
+        }
+        const touch = e.touches[0];
+        tracking = true;
+        startX = lastX = touch.clientX;
+        startY = lastY = touch.clientY;
+        startTime = Date.now();
+        lockedAxis = null;
+        startedInSidebar = !!(target && target.closest && target.closest('#sidebar'));
+      }, { passive: true });
+
+      workspaceEl.addEventListener('touchmove', (e) => {
+        if (!tracking || !e.touches || e.touches.length !== 1) {
+          reset();
+          return;
+        }
+        const touch = e.touches[0];
+        lastX = touch.clientX;
+        lastY = touch.clientY;
+        const dx = lastX - startX;
+        const dy = lastY - startY;
+
+        if (!lockedAxis && (Math.abs(dx) > 12 || Math.abs(dy) > 12)) {
+          if (Math.abs(dx) > Math.abs(dy) * 1.4) {
+            lockedAxis = 'x';
+          } else {
+            lockedAxis = 'y';
+            tracking = false;
+          }
+        }
+      }, { passive: true });
+
+      workspaceEl.addEventListener('touchend', () => {
+        if (!tracking || lockedAxis !== 'x') {
+          reset();
+          return;
+        }
+        const dx = lastX - startX;
+        const dy = lastY - startY;
+        const dt = Date.now() - startTime;
+        const minDistance = 52;
+        const isValidSwipe = Math.abs(dx) >= minDistance
+          && Math.abs(dx) > Math.abs(dy) * 1.5
+          && dt <= 900;
+
+        if (isValidSwipe) {
+          if (dx > 0 && !isSidebarOpen()) {
+            openSidebar();
+          } else if (dx < 0 && isSidebarOpen()) {
+            if (isMobileViewport() || startedInSidebar || Math.abs(dx) >= 75) {
+              closeSidebar();
+            }
+          }
+        }
+        reset();
+      }, { passive: true });
+
+      workspaceEl.addEventListener('touchcancel', reset, { passive: true });
+    })();
     settingsCloseBtn.addEventListener('click', closeSettingsModal);
     settingsModalEl.addEventListener('click', (e) => {
       if (e.target === settingsModalEl) closeSettingsModal();
