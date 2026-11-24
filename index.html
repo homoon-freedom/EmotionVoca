@@ -246,7 +246,7 @@
       background: radial-gradient(circle at 100% 0, transparent 10.6px, var(--tab-bg) 11px);
     }
 
-    /* 상단 헤더 (단일 행: 목록 · 설정 · 일~토요일) — 활성 카테고리 탭색과 동일 배경 */
+    /* 상단 헤더 (일~토요일 탭 · 우측 스와이프 시 좌측 설정 버튼 표시) — 활성 카테고리 탭색과 동일 배경 */
     .top-header {
       background: var(--header-bg);
       color: #ffffff;
@@ -255,26 +255,49 @@
       flex-shrink: 0;
       position: relative;
       z-index: 30;
+      user-select: none;
       transition: background-color 0.18s ease, border-color 0.18s ease;
     }
 
     .header-bar {
       display: flex;
       align-items: stretch;
-      gap: 6px;
+      gap: 0;
       width: 100%;
+      overflow: hidden;
     }
 
     .header-util-fixed {
       display: flex;
       align-items: stretch;
-      gap: 6px;
       flex: 0 0 auto;
-      padding-right: 6px;
+      max-width: 0;
+      opacity: 0;
+      margin-right: 0;
+      padding-right: 0;
       padding-bottom: 2px;
-      border-right: 1px solid rgba(255, 255, 255, 0.18);
+      border-right: 1px solid transparent;
+      overflow: hidden;
+      pointer-events: none;
+      transform: translateX(-14px);
       position: relative;
       z-index: 2;
+      transition:
+        max-width 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.2s ease,
+        margin-right 0.24s ease,
+        padding-right 0.24s ease,
+        transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+        border-color 0.2s ease;
+    }
+    .header-util-fixed.is-revealed {
+      max-width: 72px;
+      opacity: 1;
+      margin-right: 6px;
+      padding-right: 6px;
+      border-right-color: rgba(255, 255, 255, 0.18);
+      pointer-events: auto;
+      transform: translateX(0);
     }
 
     .day-tabs-wrap {
@@ -1242,8 +1265,7 @@
       }
 
       .top-header { padding: 9px 10px; }
-      .header-bar { gap: 5px; }
-      .header-util-fixed { gap: 5px; padding-right: 5px; }
+      .header-util-fixed.is-revealed { max-width: 62px; margin-right: 5px; padding-right: 5px; }
       .day-tab { flex: 0 0 auto; min-width: 58px; padding: 7px 9px; }
       .tab-util-btn { min-width: 46px; padding: 6px 8px; }
 
@@ -1294,19 +1316,11 @@
       <button type="button" class="cat-tab" data-cat="judge" aria-selected="false">판단</button>
     </nav>
 
-    <!-- 상단 헤더: 좌측 고정(목록 · 설정) + 우측 스크롤 가능(일~토요일 탭) -->
-    <header class="top-header">
+    <!-- 상단 헤더: 요일 탭 (요일 영역을 좌→우 스와이프 시 설정 버튼 표시) -->
+    <header class="top-header" id="topHeader">
       <div class="header-bar">
-        <div class="header-util-fixed" aria-label="도구 메뉴">
-          <button type="button" class="tab-util-btn" id="sidebarToggleBtn" aria-label="목록 열기/닫기">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
-              <line x1="4" y1="6" x2="20" y2="6"></line>
-              <line x1="4" y1="12" x2="20" y2="12"></line>
-              <line x1="4" y1="18" x2="20" y2="18"></line>
-            </svg>
-            <span class="tab-util-label">목록</span>
-          </button>
-          <button type="button" class="tab-util-btn" id="settingsBtn" aria-label="설정 열기">
+        <div class="header-util-fixed" id="headerUtilFixed" aria-label="설정 메뉴" aria-hidden="true">
+          <button type="button" class="tab-util-btn" id="settingsBtn" aria-label="설정 열기" tabindex="-1">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="3"></circle>
               <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.6.85 1 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
@@ -1495,8 +1509,9 @@
 
     // DOM 참조
     const categoryTabsEl = document.getElementById('categoryTabs');
+    const topHeaderEl = document.getElementById('topHeader');
+    const headerUtilFixedEl = document.getElementById('headerUtilFixed');
     const dayTabsEl = document.getElementById('dayTabs');
-    const sidebarToggleBtnEl = document.getElementById('sidebarToggleBtn');
     const settingsBtnEl = document.getElementById('settingsBtn');
     const workspaceEl = document.getElementById('workspace');
     const sidebarEl = document.getElementById('sidebar');
@@ -2115,13 +2130,26 @@
       bookPageEl.querySelectorAll('.answer-textarea').forEach(autoResizeTextarea);
     }
 
+    function isSettingsBtnRevealed() {
+      return !!(headerUtilFixedEl && headerUtilFixedEl.classList.contains('is-revealed'));
+    }
+
+    function showSettingsBtn() {
+      if (!headerUtilFixedEl) return;
+      headerUtilFixedEl.classList.add('is-revealed');
+      headerUtilFixedEl.setAttribute('aria-hidden', 'false');
+      if (settingsBtnEl) settingsBtnEl.tabIndex = 0;
+    }
+
+    function hideSettingsBtn() {
+      if (!headerUtilFixedEl) return;
+      headerUtilFixedEl.classList.remove('is-revealed');
+      headerUtilFixedEl.setAttribute('aria-hidden', 'true');
+      if (settingsBtnEl) settingsBtnEl.tabIndex = -1;
+    }
+
     function syncSidebarToggleButtonState() {
-      if (!sidebarToggleBtnEl) return;
-      if (isMobileViewport()) {
-        sidebarToggleBtnEl.classList.toggle('is-active', sidebarEl.classList.contains('open'));
-      } else {
-        sidebarToggleBtnEl.classList.toggle('is-active', !sidebarEl.classList.contains('collapsed'));
-      }
+      // 좌측 목록 아이콘이 제거되고 스와이프로 사이드바를 제어합니다.
     }
 
     function isSidebarOpen() {
@@ -2206,6 +2234,7 @@
         st.initializedPos = true;
       }
 
+      hideSettingsBtn();
       isEditMode = false;
       searchInputEl.value = '';
       searchClearEl.style.display = 'none';
@@ -2232,6 +2261,7 @@
           isEditMode = false;
           searchInputEl.value = '';
           searchClearEl.style.display = 'none';
+          hideSettingsBtn();
           renderAll();
           scrollActiveDayTabIntoView();
           scrollActiveWordIntoView();
@@ -2564,7 +2594,7 @@
           ${titleWrapHtml}
           <div class="pending-box">
             <strong>${escapeHtml(title)}</strong> (<code>${key}</code>)의 ${escapeHtml(cfg.unit)} 에세이 데이터가 아직 등록되지 않았습니다.<br />
-            <code>${escapeHtml(cfg.dataDir)}/</code> 폴더의 요일별 JS 파일(<code>sun.js</code>~<code>sat.js</code>)이 같은 폴더에 있으면 자동으로 불러와지며, 상단의 <strong>[설정]</strong> 버튼에서 JSON 파일을 직접 불러올 수도 있습니다.
+            <code>${escapeHtml(cfg.dataDir)}/</code> 폴더의 요일별 JS 파일(<code>sun.js</code>~<code>sat.js</code>)이 같은 폴더에 있으면 자동으로 불러와지며, 상단 요일 영역을 오른쪽으로 스와이프해 나오는 <strong>[설정]</strong> 버튼에서 JSON 파일을 직접 불러올 수도 있습니다.
             <div class="pending-actions">
               <button type="button" class="hdr-btn btn-green" id="inlineImportBtn">JSON 파일 불러오기</button>
               <button type="button" class="nav-btn edit-btn" id="inlineEditBtn">직접 작성하기</button>
@@ -2634,6 +2664,7 @@
     }
 
     function openSettingsModal() {
+      hideSettingsBtn();
       const cfg = catCfg();
       settingsModalTitleEl.textContent = `설정 · ${cfg.label} (${cfg.fullTitle})`;
       storageLabelEl.textContent = `저장된 ${cfg.unit} 데이터`;
@@ -2973,15 +3004,116 @@
       }
     });
 
-    // 좌측 고정 유틸 버튼(목록 · 설정) & 사이드바 · 모달 이벤트
-    if (sidebarToggleBtnEl) sidebarToggleBtnEl.addEventListener('click', toggleSidebar);
+    // 숨겨진 설정 버튼(요일 바 좌→우 스와이프로 표시) & 사이드바 · 모달 이벤트
     if (settingsBtnEl) settingsBtnEl.addEventListener('click', openSettingsModal);
+
+    // 요일 영역(상단 헤더) 스와이프: 좌→우 스와이프 시 설정 버튼 표시, 우→좌 스와이프 시 숨김
+    (function setupDayHeaderSettingsSwipe() {
+      if (!topHeaderEl || !dayTabsEl) return;
+      let tracking = false;
+      let startX = 0;
+      let startY = 0;
+      let lastX = 0;
+      let lastY = 0;
+      let startTime = 0;
+      let isMouse = false;
+      let suppressClick = false;
+
+      const reset = () => {
+        tracking = false;
+        isMouse = false;
+      };
+
+      const finishSwipe = () => {
+        if (!tracking) return;
+        const dx = lastX - startX;
+        const dy = lastY - startY;
+        const dt = Date.now() - startTime;
+        const absX = Math.abs(dx);
+        const absY = Math.abs(dy);
+
+        if (absX >= 38 && absX > absY * 1.25 && dt <= 900) {
+          if (dx > 0) {
+            showSettingsBtn();
+            if (isMouse) suppressClick = true;
+          } else if (dx < 0 && isSettingsBtnRevealed()) {
+            hideSettingsBtn();
+            if (isMouse) suppressClick = true;
+          }
+        }
+        reset();
+      };
+
+      topHeaderEl.addEventListener('touchstart', (e) => {
+        if (!e.touches || e.touches.length !== 1 || isAnyModalOpen()) {
+          reset();
+          return;
+        }
+        const touch = e.touches[0];
+        tracking = true;
+        isMouse = false;
+        startX = lastX = touch.clientX;
+        startY = lastY = touch.clientY;
+        startTime = Date.now();
+      }, { passive: true });
+
+      topHeaderEl.addEventListener('touchmove', (e) => {
+        if (!tracking || isMouse || !e.touches || e.touches.length !== 1) return;
+        const touch = e.touches[0];
+        lastX = touch.clientX;
+        lastY = touch.clientY;
+      }, { passive: true });
+
+      topHeaderEl.addEventListener('touchend', finishSwipe, { passive: true });
+      topHeaderEl.addEventListener('touchcancel', reset, { passive: true });
+
+      // PC 마우스 드래그로도 동일하게 설정 버튼 표시/숨김 지원
+      topHeaderEl.addEventListener('mousedown', (e) => {
+        if (e.button !== 0 || isAnyModalOpen()) return;
+        if (e.target && e.target.closest && e.target.closest('#settingsBtn')) return;
+        tracking = true;
+        isMouse = true;
+        suppressClick = false;
+        startX = lastX = e.clientX;
+        startY = lastY = e.clientY;
+        startTime = Date.now();
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!tracking || !isMouse) return;
+        lastX = e.clientX;
+        lastY = e.clientY;
+      });
+
+      window.addEventListener('mouseup', () => {
+        if (!tracking || !isMouse) return;
+        finishSwipe();
+      });
+
+      topHeaderEl.addEventListener('click', (e) => {
+        if (suppressClick) {
+          e.preventDefault();
+          e.stopPropagation();
+          suppressClick = false;
+        }
+      }, true);
+
+      // 설정 버튼이 열린 상태에서 상단 헤더 바깥을 누르면 자동으로 다시 숨김
+      document.addEventListener('pointerdown', (e) => {
+        if (!isSettingsBtnRevealed()) return;
+        if (e.target && e.target.closest && e.target.closest('#topHeader')) return;
+        hideSettingsBtn();
+      }, { passive: true });
+    })();
     sidebarBackdropEl.addEventListener('click', closeMobileSidebar);
     sidebarCloseBtn.addEventListener('click', closeMobileSidebar);
 
-    // 화면 좌→우 스와이프로 리스트 사이드바 열기 (열린 상태에서 우→좌 스와이프로 닫기)
-    (function setupSidebarSwipeGesture() {
+    // 화면 영역별 스와이프 제스처:
+    // - 중앙·상단 (상위 65%): 좌→우 스와이프로 리스트 사이드바 열기 (열린 상태에서 우→좌로 닫기)
+    // - 하단 (하위 35%): 좌→우 스와이프로 왼쪽 탭 이동, 우→좌 스와이프로 오른쪽 탭 이동
+    (function setupWorkspaceSwipeGesture() {
       if (!workspaceEl) return;
+      const BOTTOM_ZONE_START_RATIO = 0.65;
       let tracking = false;
       let startX = 0;
       let startY = 0;
@@ -2990,11 +3122,28 @@
       let startTime = 0;
       let lockedAxis = null; // 'x' | 'y' | null
       let startedInSidebar = false;
+      let startedInBottomZone = false;
 
       const reset = () => {
         tracking = false;
         lockedAxis = null;
         startedInSidebar = false;
+        startedInBottomZone = false;
+      };
+
+      const switchCategoryByOffset = (delta) => {
+        const curIdx = CATEGORY_ORDER.indexOf(currentCatKey);
+        if (curIdx === -1) return;
+        const nextIdx = curIdx + delta;
+        if (nextIdx < 0) {
+          showToast(`첫 번째 탭(${catCfg(CATEGORY_ORDER[0]).label})입니다.`);
+          return;
+        }
+        if (nextIdx >= CATEGORY_ORDER.length) {
+          showToast(`마지막 탭(${catCfg(CATEGORY_ORDER[CATEGORY_ORDER.length - 1]).label})입니다.`);
+          return;
+        }
+        switchCategory(CATEGORY_ORDER[nextIdx]);
       };
 
       workspaceEl.addEventListener('touchstart', (e) => {
@@ -3008,12 +3157,16 @@
           return;
         }
         const touch = e.touches[0];
+        const rect = workspaceEl.getBoundingClientRect();
+        const relY = rect.height > 0 ? (touch.clientY - rect.top) / rect.height : 0;
+
         tracking = true;
         startX = lastX = touch.clientX;
         startY = lastY = touch.clientY;
         startTime = Date.now();
         lockedAxis = null;
         startedInSidebar = !!(target && target.closest && target.closest('#sidebar'));
+        startedInBottomZone = relY >= BOTTOM_ZONE_START_RATIO;
       }, { passive: true });
 
       workspaceEl.addEventListener('touchmove', (e) => {
@@ -3051,10 +3204,23 @@
           && dt <= 900;
 
         if (isValidSwipe) {
-          if (dx > 0 && !isSidebarOpen()) {
-            openSidebar();
-          } else if (dx < 0 && isSidebarOpen()) {
-            if (isMobileViewport() || startedInSidebar || Math.abs(dx) >= 75) {
+          // 모바일 드로어가 열려 있거나 사이드바 내부에서 우→좌 스와이프 시 사이드바 닫기 우선
+          if ((isMobileViewport() && isSidebarOpen()) || startedInSidebar) {
+            if (dx < 0 && isSidebarOpen()) {
+              closeSidebar();
+            }
+          } else if (startedInBottomZone) {
+            // 하단 영역: 좌→우 = 왼쪽 탭, 우→좌 = 오른쪽 탭
+            if (dx > 0) {
+              switchCategoryByOffset(-1);
+            } else {
+              switchCategoryByOffset(1);
+            }
+          } else {
+            // 중앙·상단 영역: 좌→우 = 리스트 사이드바 열기, 우→좌 = 닫기
+            if (dx > 0 && !isSidebarOpen()) {
+              openSidebar();
+            } else if (dx < 0 && isSidebarOpen() && Math.abs(dx) >= 75) {
               closeSidebar();
             }
           }
@@ -3219,6 +3385,7 @@
 
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
+        hideSettingsBtn();
         closeSettingsModal();
         closeQaListModal();
         closeFavListModal();
